@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig-base.json",
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "outDir": "../dist/hak-core",
+    "rootDir": "./",
+    "skipLibCheck": true
+  }
+}
