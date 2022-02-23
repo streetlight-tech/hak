@@ -41,15 +41,14 @@ describe('TelnetAdapter', () => {
     jest
       .spyOn(adapter.connection, 'on')
       .mockImplementation((eventName: string | symbol, listener: (...args: any[]) => void) => {
-        connectionListener.mockImplementation((data: string) =>
-        listener(data));
+        connectionListener.mockImplementation((data: string) => listener(data));
 
         return adapter.connection;
       });
 
     adapter.eventBus.addListener(adapter.readEvent, mockCallback);
     adapter.eventBus.addListener(adapter.readEvent, adapter.stop);
-    
+
     await adapter.start();
 
     await adapter.eventBus.fireEvent(adapter.writeEvent, 'sent');

@@ -18,17 +18,17 @@ describe('DenonAVRInterface', () => {
     const avr = new DenonAVRInterface(adapter);
 
     eventBus.addListener<string>(adapter.readEvent, mockCallback);
-    eventBus.addListener<string>(adapter.readEvent, payload => {
+    eventBus.addListener<string>(adapter.readEvent, (payload) => {
       if (payload === 'MUOFF') {
         adapter.stop();
       }
     });
 
     try {
-        await adapter.start();
-        await avr.mainZoneMuteSwitch.turnOn();
-        await avr.mainZoneMuteSwitch.turnOff();
-        await adapter.stop();
+      await adapter.start();
+      await avr.mainZoneMuteSwitch.turnOn();
+      await avr.mainZoneMuteSwitch.turnOff();
+      await adapter.stop();
     } catch (err) {
       console.log(err);
     }

@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "test": "jest --verbose --testPathPattern=\\.spec\\.ts",
+    "test": "jest --verbose --testPathPattern=\\.spec\\.ts --runInBand",
     "test:unit": "jest --testPathPattern=unit.*\\.spec\\.ts",
     "test:debug": "node --trace-warnings node_modules/.bin/jest",
     "build": "tsc --project tsconfig.json --diagnostics",
