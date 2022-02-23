@@ -26,6 +26,7 @@ export class EventWaiter<T> {
    */
   private waitForEvent(options: WaitForEventOptions<T>) {
     this.resolved = false;
+
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (!this.resolved) {
@@ -56,7 +57,7 @@ export class EventWaiter<T> {
 
   public static async waitForEvent<T>(eventBus: EventBus, options: WaitForEventOptions<T>) {
     const eventWaiter = new EventWaiter(eventBus);
-  
+
     return eventWaiter.waitForEvent(options);
   }
 }

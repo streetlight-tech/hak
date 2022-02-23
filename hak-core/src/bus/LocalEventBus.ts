@@ -1,4 +1,3 @@
-// import { pEvent } from 'p-event';
 import { EventEmitter } from 'events';
 import { EventBus } from './EventBus';
 
