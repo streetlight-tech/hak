@@ -1,3 +1,4 @@
+// import { pEvent } from 'p-event';
 import { EventEmitter } from 'events';
 import { EventBus } from './EventBus';
 
@@ -21,6 +22,15 @@ export class LocalEventBus implements EventBus {
    */
   public addListener<T>(event: string, callback: (payload: T) => void) {
     this.eventEmitter.on(event, callback);
+  }
+
+  /**
+   * Removes a listener for events with the specified name.
+   * @param event Name of event to listen for
+   * @param callback Callback to remove
+   */
+  public removeListener<T>(event: string, callback: (payload: T) => void) {
+    this.eventEmitter.removeListener(event, callback);
   }
 
   /**

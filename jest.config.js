@@ -5,7 +5,6 @@ module.exports = {
   clearMocks: true,
   resetMocks: true,
   coverageDirectory: 'coverage',
-  collectCoverageFrom: [
-    './src/**/*'
-  ],
-}
+  collectCoverageFrom: ['./src/**/*'],
+  extensionsToTreatAsEsm: ['.ts'],
+};

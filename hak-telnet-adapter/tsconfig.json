@@ -3,6 +3,9 @@
   "compilerOptions": {
     "rootDir": ".",
     "baseUrl": "./src",
-    "outDir": "../dist/hak-core"
-  }
+    "outDir": "../dist/hak-telnet-adapter"
+  },
+  "references": [
+    { "path": "../hak-core"}
+  ]
 }

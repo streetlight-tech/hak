@@ -11,9 +11,16 @@ export interface EventBus {
   addListener<T>(event: string, callback: (payload: T) => void): void;
 
   /**
+   * Removes a listener for events with the specified name.
+   * @param event Name of event to listen for
+   * @param callback Callback to remove
+   */
+   removeListener<T>(event: string, callback: (payload: T) => void): void;
+
+  /**
    * Fires an event with the specified name.
    * @param event Name of event to fire
    * @param payload Contents of event to pass to callback of registered listeners
    */
-   fireEvent<T>(event: string, payload: T): void;
+  fireEvent<T>(event: string, payload: T): void;
 }

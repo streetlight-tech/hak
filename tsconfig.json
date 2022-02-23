@@ -1,8 +1,15 @@
 {
+  "files": [],
   "extends": "./tsconfig-base.json",
   "references": [
     {
       "path": "./hak-core"
+    },
+    {
+      "path": "./hak-telnet-adapter"
+    },
+    {
+      "path": "./hak-denon-avr"
     }
   ]
 }
