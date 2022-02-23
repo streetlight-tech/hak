@@ -19,16 +19,6 @@ export class ReadWriteDevice<T> {
   }
 
   /**
-   * Returns a promise resolved when then an event is fired and rejected after the timeout
-   * @param event Name of event to wait for
-   * @param timeout Timeout in milliseconds
-   * @param filter Optional filter function to apply on event listener
-   */
-  public waitForEvent(timeout: number, filter?: (payload: T) => boolean) {
-    return this.eventReader.waitForEvent(timeout, filter);
-  }
-
-  /**
    * Fires an event and returns a promise that is resolved once another event is fired.
    * @param waitFor Event to wait for
    * @param timeout Timeout in milliseconds

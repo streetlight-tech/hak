@@ -6,7 +6,7 @@ import { jest } from '@jest/globals';
 describe('DenonAVRInterface', () => {
   afterAll(() => jest.resetAllMocks());
 
-  it('should turn mute on', async () => {
+  it('should turn mute on and off', async () => {
     const mockCallback = jest.fn();
     const eventBus = new LocalEventBus();
     const adapter = new TelnetAdapter({
@@ -35,5 +35,6 @@ describe('DenonAVRInterface', () => {
 
     expect(mockCallback.mock.calls.length).toBe(2);
     expect(mockCallback.mock.calls[0][0]).toBe('MUON\r');
+    expect(mockCallback.mock.calls[1][0]).toBe('MUOFF\r');
   });
 });
