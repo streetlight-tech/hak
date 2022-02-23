@@ -26,8 +26,7 @@ export class ReadWriteDevice<T> {
    * @param filter Optional filter function to apply on event listener
    */
   public fireAndWaitFor(waitFor: T, timeout: number, payload: T, filter?: (payload: T) => boolean) {
-    const eventWaiter = new EventWaiter<T>(this.eventBus);
-    return eventWaiter.waitForEvent({
+    return EventWaiter.waitForEvent(this.eventBus, {
       event: this.readEvent,
       timeout,
       filter,

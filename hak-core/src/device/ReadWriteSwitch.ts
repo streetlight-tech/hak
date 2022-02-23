@@ -10,7 +10,7 @@ export class ReadWriteSwitch<T> {
   public offResult: T;
   public timeout: number;
 
-  constructor(options: ReadWriteSwitchOptions) {
+  constructor(options: ReadWriteSwitchOptions<T>) {
     Object.assign(this, options);
   }
 

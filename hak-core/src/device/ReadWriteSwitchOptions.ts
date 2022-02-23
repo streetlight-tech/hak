@@ -1,7 +1,7 @@
 import { ReadWriteDevice } from './ReadWriteDevice';
 
-export interface ReadWriteSwitchOptions {
-  device: ReadWriteDevice;
+export interface ReadWriteSwitchOptions<T> {
+  device: ReadWriteDevice<T>;
   eventName: string;
   onCommand: string;
   offCommand: string;

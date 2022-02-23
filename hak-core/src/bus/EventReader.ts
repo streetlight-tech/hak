@@ -20,7 +20,6 @@ export class EventReader<T> {
    * @param filter Optional filter function to apply on event listener
    */
   public waitForEvent(timeout: number, filter?: (payload: T) => boolean) {
-    const eventWaiter = new EventWaiter<T>(this.eventBus);
-    return eventWaiter.waitForEvent({ event: this.event, timeout, filter });
+    return EventWaiter.waitForEvent(this.eventBus, { event: this.event, timeout, filter });
   }
 }
