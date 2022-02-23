@@ -6,6 +6,7 @@ module.exports = {
   resetMocks: true,
   coverageDirectory: 'coverage',
   collectCoverageFrom: [
-    './src/**/*'
+    './**/src/**/*',
+    '!./dist/**/*'
   ],
 }

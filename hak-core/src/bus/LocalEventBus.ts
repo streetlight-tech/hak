@@ -24,6 +24,15 @@ export class LocalEventBus implements EventBus {
   }
 
   /**
+   * Removes a listener for events with the specified name.
+   * @param event Name of event to listen for
+   * @param callback Callback to remove
+   */
+  public removeListener<T>(event: string, callback: (payload: T) => void) {
+    this.eventEmitter.removeListener(event, callback);
+  }
+
+  /**
    * Fires an event with the specified name.
    * @param event Name of event to fire
    * @param payload Contents of event to pass to callback of registered listeners
