@@ -3,13 +3,14 @@ import { TelnetAdapterOptions } from './TelnetAdaterOptions';
 import { EventBus } from '../../hak-core/src/bus/EventBus';
 import { ReadWriteDevice } from '../../hak-core/src/device/ReadWriteDevice';
 
-export class TelnetAdapter implements ReadWriteDevice {
+export class TelnetAdapter {
   connection: Telnet;
   options: TelnetAdapterOptions;
   eventBus: EventBus;
   public isRunning: boolean;
   public readEvent: string;
   public writeEvent: string;
+  public device: ReadWriteDevice<string>;
 
   constructor(options: TelnetAdapterOptions) {
     this.options = options;
@@ -17,6 +18,7 @@ export class TelnetAdapter implements ReadWriteDevice {
     this.readEvent = options.readEvent;
     this.writeEvent = options.writeEvent;
     this.connection = new Telnet();
+    this.device = new ReadWriteDevice<string>(this.eventBus, this.readEvent, this.writeEvent);
   }
 
   public async connect() {

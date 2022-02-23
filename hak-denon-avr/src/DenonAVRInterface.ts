@@ -3,13 +3,13 @@ import { TelnetAdapter } from '../../hak-telnet-adapter/src/TelnetAdapter';
 
 export class DenonAVRInterface {
   adapter: TelnetAdapter;
-  mainZonePowerSwitch: ReadWriteSwitch;
-  mainZoneMuteSwitch: ReadWriteSwitch;
+  mainZonePowerSwitch: ReadWriteSwitch<string>;
+  mainZoneMuteSwitch: ReadWriteSwitch<string>;
 
   constructor(adapter: TelnetAdapter) {
     this.adapter = adapter;
     this.mainZonePowerSwitch = new ReadWriteSwitch({
-      device: adapter,
+      device: adapter.device,
       eventName: adapter.writeEvent,
       onCommand: 'PWON',
       offCommand: 'PWOFF',
@@ -18,7 +18,7 @@ export class DenonAVRInterface {
       timeout: 1000,
     });
     this.mainZoneMuteSwitch = new ReadWriteSwitch({
-      device: adapter,
+      device: adapter.device,
       eventName: adapter.writeEvent,
       onCommand: 'MUON',
       offCommand: 'MUOFF',

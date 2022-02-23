@@ -1,21 +1,17 @@
 import { ReadWriteSwitchOptions } from './ReadWriteSwitchOptions';
 import { ReadWriteDevice } from './ReadWriteDevice';
-import { EventManager } from '../bus/EventManager';
 
-export class ReadWriteSwitch {
+export class ReadWriteSwitch<T> {
   private on: boolean;
-  private device: ReadWriteDevice;
-  public eventName: string;
-  public onCommand: string;
-  public offCommand: string;
-  public onResult: string;
-  public offResult: string;
+  private device: ReadWriteDevice<T>;
+  public onCommand: T;
+  public offCommand: T;
+  public onResult: T;
+  public offResult: T;
   public timeout: number;
-  public eventManager: EventManager;
 
   constructor(options: ReadWriteSwitchOptions) {
     Object.assign(this, options);
-    this.eventManager = new EventManager(this.device.eventBus);
   }
 
   public isOn() {
@@ -24,7 +20,7 @@ export class ReadWriteSwitch {
 
   public async turnOn() {
     try {
-      await this.eventManager.fireAndWaitForEvent(this.eventName, this.onResult, this.timeout, this.onCommand);
+      await this.device.fireAndWaitFor(this.onResult, this.timeout, this.onCommand);
       return true;
     } catch (error) {
       return false;
@@ -33,7 +29,7 @@ export class ReadWriteSwitch {
 
   public async turnOff() {
     try {
-      await this.eventManager.fireAndWaitForEvent(this.eventName, this.offResult, this.timeout, this.offCommand);
+      await this.device.fireAndWaitFor(this.offResult, this.timeout, this.offCommand);
       return true;
     } catch (error) {
       return false;
