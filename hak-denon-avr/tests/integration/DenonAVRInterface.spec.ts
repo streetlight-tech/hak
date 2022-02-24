@@ -6,6 +6,8 @@ import { jest } from '@jest/globals';
 describe('DenonAVRInterface', () => {
   afterAll(() => jest.resetAllMocks());
 
+  const event = 'DENON';
+
   it('should turn mute on and off', async () => {
     const mockCallback = jest.fn();
     const eventBus = new LocalEventBus();
@@ -15,26 +17,33 @@ describe('DenonAVRInterface', () => {
       writeEvent: 'DENON:WRITE',
       eventBus,
     });
-    const avr = new DenonAVRInterface(adapter);
+    const avr = new DenonAVRInterface(adapter, event);
 
-    eventBus.addListener<string>(adapter.readEvent, mockCallback);
-    eventBus.addListener<string>(adapter.readEvent, (payload) => {
-      if (payload === 'MUOFF') {
-        adapter.stop();
-      }
-    });
+    adapter.device.readTranslator.target.addListener(event, mockCallback);
+    adapter.device.readTranslator.target.addListener(event, console.log);
 
     try {
       await adapter.start();
-      await avr.mainZoneMuteSwitch.turnOn();
-      await avr.mainZoneMuteSwitch.turnOff();
+      avr.setState({
+        zones: {
+          main: {
+            mute: true,
+          },
+        },
+      });
+      avr.setState({
+        zones: {
+          main: {
+            mute: false,
+          },
+        },
+      });
       await adapter.stop();
     } catch (err) {
       console.log(err);
     }
 
-    expect(mockCallback.mock.calls.length).toBe(2);
-    expect(mockCallback.mock.calls[0][0]).toBe('MUON\r');
-    expect(mockCallback.mock.calls[1][0]).toBe('MUOFF\r');
+    expect(mockCallback.mock.calls.length).toBe(1);
+    expect(mockCallback.mock.calls[0][0]).toEqual({ key: 'DENON.zones.main.mute', oldValue: true, newValue: false });
   });
 });

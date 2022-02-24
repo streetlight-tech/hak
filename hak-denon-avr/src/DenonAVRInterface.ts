@@ -1,30 +1,100 @@
-import { ReadWriteSwitch } from '../../hak-core/src/device/ReadWriteSwitch';
+import { DenonAVRState } from './DenonAVRState';
 import { TelnetAdapter } from '../../hak-telnet-adapter/src/TelnetAdapter';
+import { StateListener } from '../../hak-core/src/state/StateListener';
+import { StateChange } from '../../hak-core/src/state/StateChange';
 
 export class DenonAVRInterface {
   adapter: TelnetAdapter;
-  mainZonePowerSwitch: ReadWriteSwitch<string>;
-  mainZoneMuteSwitch: ReadWriteSwitch<string>;
-
-  constructor(adapter: TelnetAdapter) {
+  stateListener: StateListener<DenonAVRState>;
+  key: string;
+  constructor(adapter: TelnetAdapter, key: string) {
     this.adapter = adapter;
-    this.mainZonePowerSwitch = new ReadWriteSwitch({
-      device: adapter.device,
-      eventName: adapter.writeEvent,
-      onCommand: 'PWON',
-      offCommand: 'PWOFF',
-      onResult: 'PWON',
-      offResult: 'PWOFF',
-      timeout: 1000,
+    this.key = key;
+    this.stateListener = new StateListener(key, this.createListener(this.adapter));
+    this.mapReadEvents();
+    this.mapWriteEvents();
+  }
+
+  setState(state: DenonAVRState) {
+    this.stateListener.setState(state);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private createListener(adapter: TelnetAdapter) {
+    return (change: StateChange) => {
+      adapter.device.writeTranslator.source.fireEvent(this.key, change);
+    };
+  }
+
+  private mapReadEvents() {
+    const maps = [
+      {
+        key: 'main.power',
+        targetTransform: (c: string) => true,
+        sourceFilter: (c: string) => c == 'PWON',
+      },
+      {
+        key: 'main.power',
+        targetTransform: (c: string) => false,
+        sourceFilter: (c: string) => c == 'PWOFF',
+      },
+      {
+        key: 'main.mute',
+        targetTransform: (c: string) => true,
+        sourceFilter: (c: string) => c == 'MUON',
+      },
+      {
+        key: 'main.mute',
+        targetTransform: (c: string) => false,
+        sourceFilter: (c: string) => c == 'MUOFF',
+      },
+    ];
+    maps.map((m) => this.mapReadEvent(m.key, m.targetTransform, m.sourceFilter));
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private mapReadEvent(key: string, targetTransform: (c: string) => any, sourceFilter: (c: string) => any) {
+    this.adapter.device.writeTranslator.mapEvent<string, string>({
+      sourceEvent: this.key,
+      sourceFilter,
+      targetEvent: 'send',
+      targetTransform,
     });
-    this.mainZoneMuteSwitch = new ReadWriteSwitch({
-      device: adapter.device,
-      eventName: adapter.writeEvent,
-      onCommand: 'MUON',
-      offCommand: 'MUOFF',
-      onResult: 'MUON',
-      offResult: 'MUOFF',
-      timeout: 1000,
+  }
+
+  private mapWriteEvents() {
+    const maps = [
+      {
+        key: 'main.power',
+        payload: true,
+        command: 'PWON',
+      },
+      {
+        key: 'main.power',
+        payload: false,
+        command: 'PWOFF',
+      },
+      {
+        key: 'main.mute',
+        payload: true,
+        command: 'MUON',
+      },
+      {
+        key: 'main.mute',
+        payload: false,
+        command: 'MUOFF',
+      },
+    ];
+    maps.map((m) => this.mapWriteEvent(m.key, m.payload, m.command));
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private mapWriteEvent(key: string, payload: any, command: string) {
+    this.adapter.device.writeTranslator.mapEvent<StateChange, string>({
+      sourceEvent: this.key,
+      sourceFilter: (p) => p.key == `${this.key}.${key}` && p.newValue == payload,
+      targetEvent: 'send',
+      targetPayload: command,
     });
   }
 }

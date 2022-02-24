@@ -51,4 +51,12 @@ export class EventTranslator {
       }
     });
   }
+
+  /**
+   * Maps multipe events
+   * @param maps Array of MapEventOptions
+   */
+  public mapEvents<TSource, TTarget>(maps: Array<MapEventOptions<TSource, TTarget>>) {
+    maps.map(m => this.mapEvent(m));
+  }
 }

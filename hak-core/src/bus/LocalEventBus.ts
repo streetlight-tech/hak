@@ -9,9 +9,10 @@ export class LocalEventBus implements EventBus {
 
   /**
    * Creates a new instance of LocalEventBus.
+   * @param emitter Optional event emitter
    */
-  constructor() {
-    this.eventEmitter = new EventEmitter();
+   constructor(emitter?: EventEmitter) {
+    this.eventEmitter = emitter ?? new EventEmitter();
   }
 
   /**

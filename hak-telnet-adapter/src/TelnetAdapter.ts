@@ -1,16 +1,17 @@
 import { Telnet } from 'telnet-client';
 import { TelnetAdapterOptions } from './TelnetAdaterOptions';
 import { EventBus } from '../../hak-core/src/bus/EventBus';
+import { LocalEventBus } from '../../hak-core/src/bus/LocalEventBus';
 import { ReadWriteDevice } from '../../hak-core/src/device/ReadWriteDevice';
 
 export class TelnetAdapter {
   connection: Telnet;
   options: TelnetAdapterOptions;
   eventBus: EventBus;
+  readEvent: string;
+  writeEvent: string;
   public isRunning: boolean;
-  public readEvent: string;
-  public writeEvent: string;
-  public device: ReadWriteDevice<string>;
+  public device: ReadWriteDevice;
 
   constructor(options: TelnetAdapterOptions) {
     this.options = options;
@@ -18,7 +19,8 @@ export class TelnetAdapter {
     this.readEvent = options.readEvent;
     this.writeEvent = options.writeEvent;
     this.connection = new Telnet();
-    this.device = new ReadWriteDevice<string>(this.eventBus, this.readEvent, this.writeEvent);
+    this.connection.on('send', this.send);
+    this.device = new ReadWriteDevice(new LocalEventBus(this.connection), this.eventBus);
   }
 
   public async connect() {
@@ -35,17 +37,18 @@ export class TelnetAdapter {
     if (!this.isRunning) {
       this.isRunning = true;
 
-      this.eventBus.addListener(this.writeEvent, async (payload: string) => {
-        this.send(payload);
-      });
-
-      this.readListener = this.readListener.bind(this);
-      this.connection.on('data', this.readListener);
-
       await this.connect();
 
       await this.init();
     }
+  }
+
+  public mapData<T>(event: string, listener: (payload: T) => T) {
+    this.device.readTranslator.mapEvent({
+      sourceEvent: 'data',
+      targetEvent: event,
+      targetTransform: listener,
+    })
   }
 
   public async stop() {
@@ -63,15 +66,7 @@ export class TelnetAdapter {
     );
   }
 
-  public async send(command: string) {
-    return this.connection.send(command);
-  }
-
-  private readListener(output: Buffer) {
-    if (this.isRunning) {
-      if (output) {
-        this.eventBus.fireEvent<string>(this.readEvent, output.toString());
-      }
-    }
+  public async send<T>(payload: T) {
+    return this.device.writeTranslator.source.fireEvent(this.writeEvent, payload);
   }
 }
