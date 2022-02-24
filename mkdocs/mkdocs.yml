@@ -1,0 +1,6 @@
+site_name: hak
+site_url: https://streetlight-tech.github.io/hak/
+theme: readthedocs
+nav:
+  - Home: index.md
+  - hak-core: hak-core/index.md

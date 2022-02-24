@@ -1,0 +1,5 @@
+{
+  "entryPoints": ["hak-core/src"],
+  "entryPointStrategy": "expand",
+  "out": "docs/api"
+}

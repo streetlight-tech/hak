@@ -1,5 +1,7 @@
 dist/
 node_modules/
 coverage/
+docs/
+!*/docs/
 
 .DS_Store
