@@ -19,6 +19,8 @@ describe('TelnetAdapter', () => {
       eventBus: new LocalEventBus(),
     });
 
+    adapter.mapData(adapter.readEvent, payload => `processed:${payload}`);
+
     jest.spyOn(adapter.connection, 'connect').mockImplementation(() => {
       return Promise.resolve();
     });
@@ -32,10 +34,6 @@ describe('TelnetAdapter', () => {
           return Promise.resolve('');
         },
       );
-
-    // jest.spyOn(adapter.connection, 'end').mockImplementation(() => {
-    //   return Promise.resolve();
-    // });
 
     const connectionListener = jest.fn();
     jest
@@ -51,10 +49,11 @@ describe('TelnetAdapter', () => {
 
     await adapter.start();
 
-    await adapter.eventBus.fireEvent(adapter.writeEvent, 'sent');
+    adapter.device.writeTranslator.source.fireEvent(adapter.writeEvent, 'sent');
 
-    connectionListener.getMockImplementation()('received');
+    connectionListener('received');
 
+    expect(sentValues.length).toBe(1);
     expect(sentValues.sort()).toEqual(['foo', 'sent'].sort());
     expect(mockCallback.mock.calls.length).toBe(1);
     expect(mockCallback.mock.calls[0][0]).toBe('received');

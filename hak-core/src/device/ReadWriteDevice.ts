@@ -1,12 +1,22 @@
 import { EventBus } from '../bus/EventBus';
-import { EventTranslator } from '../bus/EventTranslator';
+import { EventData } from '../bus/EventData';
+import { StateChange } from '../state/StateChange';
+import { DeviceReader } from './DeviceReader';
+import { DeviceWriter } from './DeviceWriter';
 
-export class ReadWriteDevice {
-  readTranslator: EventTranslator;
-  writeTranslator: EventTranslator;
+export class ReadWriteDevice<TRead extends object> {
+  state: TRead;
+  eventBus: EventBus;
+  private reader: DeviceReader<TRead>;
+  private writer: DeviceWriter;
 
-  constructor(readBus: EventBus, writeBus: EventBus) {
-    this.readTranslator = new EventTranslator(readBus, writeBus);
-    this.writeTranslator = new EventTranslator(writeBus, readBus);
+  constructor(eventBus: EventBus, readEvent: string, eventWriter: DeviceWriter) {
+    this.reader = new DeviceReader<TRead>(eventBus, readEvent);
+    this.writer = eventWriter;
   }
+
+  requestWrite(change: StateChange) {
+    this.writer.requestStateChange(change);
+  }
+
 }

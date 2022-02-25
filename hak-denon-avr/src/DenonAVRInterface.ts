@@ -1,16 +1,16 @@
 import { DenonAVRState } from './DenonAVRState';
 import { TelnetAdapter } from '../../hak-telnet-adapter/src/TelnetAdapter';
-import { StateListener } from '../../hak-core/src/state/StateListener';
+import { StateMonitor } from '../../hak-core/src/state/StateMonitor';
 import { StateChange } from '../../hak-core/src/state/StateChange';
 
 export class DenonAVRInterface {
   adapter: TelnetAdapter;
-  stateListener: StateListener<DenonAVRState>;
+  stateListener: StateMonitor<DenonAVRState>;
   key: string;
   constructor(adapter: TelnetAdapter, key: string) {
     this.adapter = adapter;
     this.key = key;
-    this.stateListener = new StateListener(key, this.createListener(this.adapter));
+    this.stateListener = new StateMonitor(key, this.createListener(this.adapter));
     this.mapReadEvents();
     this.mapWriteEvents();
   }
@@ -26,6 +26,7 @@ export class DenonAVRInterface {
     };
   }
 
+  //TODO: Move this to ReadWriteDevice and then use that in TelnetAdapter.
   private mapReadEvents() {
     const maps = [
       {

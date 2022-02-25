@@ -1,6 +1,6 @@
-import { StateListener } from '../../../src/state/StateListener';
+import { StateMonitor } from '../../../src/state/StateMonitor';
 
-describe('StateListener', () => {
+describe('StateMonitor', () => {
   afterAll(() => jest.resetAllMocks());
 
   it('should listen for changes', async () => {
@@ -8,7 +8,7 @@ describe('StateListener', () => {
 
     const state = { foo: 'bar', baz: 'qux', child: { sub: 'child value' } };
 
-    const listener = new StateListener('top', ({ key, oldValue, newValue }) => {
+    const listener = new StateMonitor(({ key, oldValue, newValue }) => {
       mockCallback(key, oldValue, newValue);
     });
 
@@ -16,8 +16,8 @@ describe('StateListener', () => {
     listener.setState({ foo: 'qux', baz: 'bar',  child: { sub: 'new child value' } });
 
     expect(mockCallback.mock.calls.length).toBe(3);
-    expect(mockCallback.mock.calls[0]).toEqual(['top.foo', 'bar', 'qux']);
-    expect(mockCallback.mock.calls[1]).toEqual(['top.baz', 'qux', 'bar']);
-    expect(mockCallback.mock.calls[2]).toEqual(['top.child.sub', 'child value', 'new child value']);
+    expect(mockCallback.mock.calls[0]).toEqual(['foo', 'bar', 'qux']);
+    expect(mockCallback.mock.calls[1]).toEqual(['baz', 'qux', 'bar']);
+    expect(mockCallback.mock.calls[2]).toEqual(['child.sub', 'child value', 'new child value']);
   });
 });

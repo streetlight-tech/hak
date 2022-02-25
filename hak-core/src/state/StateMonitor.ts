@@ -1,17 +1,15 @@
 import { StateChange } from './StateChange';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export class StateListener<T extends object> {
+export class StateMonitor<T extends object> {
   private proxy: T;
-  private key: string;
   private listener: (change: StateChange) => void;
 
-  constructor(key: string, listener: (change: StateChange) => void) {
-    this.key = key;
+  constructor(listener: (change: StateChange) => void) {
     this.listener = listener;
   }
 
-  createProxy(key: string, state: any, listener: (change: StateChange) => void) {
+  private createProxy(state: any, listener: (change: StateChange) => void, key?: string) {
     const proxy = new Proxy(state, {
       set: (target: T, p: string | symbol, value: any, receiver: T) => {
         const propName = p.toString();
@@ -21,31 +19,39 @@ export class StateListener<T extends object> {
             Object.assign(proxy[propName], value);
           } else {
             if (receiver[propName]) {
-              listener({ key: `${key}.${propName}`, oldValue: receiver[propName], newValue: value });
+              listener({
+                key: StateMonitor.createFullKey(key, propName),
+                oldValue: receiver[propName],
+                newValue: value,
+              });
             }
           }
         }
-  
+
         target[propName] = value;
-  
+
         return true;
       },
     });
 
     for (const prop in state) {
       if (typeof state[prop] === 'object') {
-        proxy[prop] = this.createProxy(`${key}.${prop}`, state[prop], listener);
+        proxy[prop] = this.createProxy(state[prop], listener, StateMonitor.createFullKey(key, prop));
       }
     }
 
     return proxy;
   }
 
+  private static createFullKey(key: string, nextKey: string) {
+    return key ? `${key}.${nextKey}` : nextKey;
+  }
+
   setState(state: T) {
     if (this.proxy) {
       Object.assign(this.proxy, state);
     } else {
-      this.proxy = this.createProxy(this.key, state, this.listener)
+      this.proxy = this.createProxy(state, this.listener);
     }
   }
 }
